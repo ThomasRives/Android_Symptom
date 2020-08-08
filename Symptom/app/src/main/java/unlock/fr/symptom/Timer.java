@@ -17,7 +17,7 @@ public class Timer {
     /* The true countdown */
     private CountDownTimer countdownTimer = null;
     /* Handler to put text in white 1 sec after error */
-    private Handler timeInWhite;
+    private Handler timeInWhite = new Handler();
 
     /**
      * Constructor.
@@ -106,7 +106,7 @@ public class Timer {
     public void removeTime(long penalty) {
         timeLeft -= penalty;
         displayedTime.setTextColor(Color.RED);
-        //timeInWhite.removeCallbacksAndMessages(null);
+        timeInWhite.removeCallbacksAndMessages(null);
         timeInWhite = new Handler();
 
         timeInWhite.postDelayed(new Runnable() {
