@@ -104,9 +104,9 @@ public class Timer {
      * @param penalty: the time withdrawed (in seconds).
      */
     public void removeTime(long penalty) {
-        countdownTimer.cancel();
         timeLeft -= penalty;
         displayedTime.setTextColor(Color.RED);
+        //timeInWhite.removeCallbacksAndMessages(null);
         timeInWhite = new Handler();
 
         timeInWhite.postDelayed(new Runnable() {
@@ -116,7 +116,11 @@ public class Timer {
             }
         }, 1000);
 
-        createNewCountDown();
+        if(!paused) {
+            countdownTimer.cancel();
+            createNewCountDown();
+        }
+        else displayedTime.setText(displayableTime());
     }
 
     /**
