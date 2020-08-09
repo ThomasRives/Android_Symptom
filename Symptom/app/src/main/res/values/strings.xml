@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Symptom</string>
     <string name="app_title">Symptomes</string>
+    <string name="empty_code" />
 </resources>

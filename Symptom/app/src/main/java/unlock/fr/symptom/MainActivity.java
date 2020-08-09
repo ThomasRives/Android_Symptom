@@ -4,6 +4,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -33,11 +35,13 @@ public class MainActivity extends AppCompatActivity {
     /* Given time to finish the game */
     private int givenTime = 3600000;
     /* Count down */
-    private Timer timer;
+    private static Timer timer;
     /* readable version of time left */
     private TextView displayedTime;
     /* Penalty that will be given if the penalty button is given (in seconds)*/
     private int penaltyTime = 180;
+    /* To play the principal music */
+    MediaPlayer mainTheme = null;
 
 
     @Override
@@ -56,7 +60,26 @@ public class MainActivity extends AppCompatActivity {
         closeButton = (ImageButton) findViewById(R.id.closeButton);
         displayedTime = (TextView) findViewById(R.id.textTime);
         timer = new Timer(givenTime, 1, displayedTime);
+        initMainTheme();
         addButtonListener();
+    }
+
+    private void initMainTheme() {
+        mainTheme = MediaPlayer.create(getApplicationContext(), R.raw.main_theme);
+        mainTheme.setLooping(true);
+        mainTheme.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                stopMainTheme();
+            }
+        });
+    }
+
+    private void stopMainTheme() {
+        if(mainTheme != null) {
+                mainTheme.release();
+                mainTheme = null;
+        }
     }
 
     private void addButtonListener() {
@@ -66,10 +89,12 @@ public class MainActivity extends AppCompatActivity {
                 if(timer.isPaused()) {
                     timer.resume();
                     Toast.makeText(MainActivity.this, "Resume", Toast.LENGTH_LONG).show();
+                    mainTheme.start();
                 }
                 else {
                     timer.pause();
                     Toast.makeText(MainActivity.this, "Pause", Toast.LENGTH_LONG).show();
+                    mainTheme.pause();
                 }
             }
         });
@@ -93,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                                 finish();
                             }
                         })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        .setNegativeButton("Non", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.cancel();
@@ -103,5 +128,29 @@ public class MainActivity extends AppCompatActivity {
                 alert.show();
             }
         });
+        codeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, PassCode.class));
+            }
+        });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopMainTheme();
+        timer.stopTimer();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        timer.stopTimer();
+        timer = null;
+    }
+
+    public static Timer getTimer() {
+        return timer;
     }
 }

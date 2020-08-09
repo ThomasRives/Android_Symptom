@@ -4,8 +4,11 @@ import android.graphics.Color;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.widget.TextView;
+
+import java.io.Serializable;
+
 // 99:99 = 6039
-public class Timer {
+public class Timer implements Serializable {
     /* The view that will be updated */
     private TextView displayedTime;
     /* Indicate if the timer is paused */
@@ -40,11 +43,7 @@ public class Timer {
      */
     private String displayableTime() {
         long timeLeftSeconds = timeLeft / 1000;
-        long minutesLeft = timeLeftSeconds / 60;
-        String minutes = (minutesLeft < 10) ? "0" + minutesLeft : "" + minutesLeft;
-        long secondsLeft = (timeLeftSeconds % 60);
-        String seconds = (secondsLeft < 10) ? "0" + secondsLeft : "" + secondsLeft;
-        return minutes +":" + seconds;
+        return String.format("%02d:%02d", timeLeftSeconds / 60, timeLeftSeconds % 60);
     }
 
     /**
@@ -114,7 +113,7 @@ public class Timer {
             public void run() {
                 displayedTime.setTextColor(Color.WHITE);
             }
-        }, 1000);
+        }, 1500);
 
         if(!paused) {
             countdownTimer.cancel();
@@ -130,5 +129,13 @@ public class Timer {
      */
     public boolean isPaused() {
         return paused;
+    }
+
+    /**
+     * Stop properly the timer.
+     */
+    public void stopTimer() {
+        if(countdownTimer != null)
+            timeInWhite.removeCallbacksAndMessages(null);
     }
 }
